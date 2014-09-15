@@ -1,0 +1,162 @@
+stop();
+
+var online:Boolean = false;
+var readyToAdd:Boolean = true;
+var addMsgQueue:Array = new Array();
+var newMessage:String = "";
+
+var depth:Number = 100;
+var numOfMsgs:Number = 0;
+var firstMsgPosition:Number = 0;
+var totalMsgHeight:Number = 0;
+var chatArray:Array = new Array();
+var scroll_timer:Number;
+var scrolling:Boolean = false;
+
+var timer:Number = setTimeout(init, 100);
+
+function init() {
+	if (!online) {
+		timer = setTimeout(init, 100);
+		return;
+	}
+}
+
+_root.watch("newMessage", readMsg);
+function readMsg(id, oldval, newval) {
+	if (newval.length>0) {
+		var start:Number = 0;
+		var end:Number = 0;
+		while (newval.length>end+1) {
+			// retrieve user name
+			start = end+1;
+			end = newval.indexOf("|", start);
+			var user:String = newval.substr(start, end-start);
+
+		
+			
+			start = end+1;
+			end = newval.indexOf("|", start);
+			var color:String = newval.substr(start, end-start);
+
+			// retrieve message content
+			start = end+1;
+			end = newval.indexOf("|", start);
+			var message:String = newval.substr(start, end-start);
+
+			var msgObj = new Object();
+			msgObj.user_name = user;
+			
+			msgObj.color=color;
+			msgObj.msg_content = message;
+			addMsgQueue.push(msgObj);
+			createMsg();
+		}
+	}
+}
+
+function setMsgFormat(tf:TextField, newColor:Number, font:String, fontsize:Number) {
+	var msgFormat:TextFormat = new TextFormat();
+	msgFormat.font = font;
+	msgFormat.size = fontsize;
+	msgFormat.color = newColor;
+	msgFormat.leftMargin = 0;
+	msgFormat.rightMargin = 0;
+	tf.setTextFormat(msgFormat);
+	tf.autoSize = true;
+	tf.wordWrap = true;
+}
+
+function createMsg() {
+	if (!readyToAdd) {
+		setTimeout(createMsg,20);
+		return;
+	}
+	if (addMsgQueue.length<=0) {
+		return;
+	}
+	readyToAdd = false;
+	var msgObj = addMsgQueue.shift();
+	var user_name = msgObj.user_name;
+	var msg_color=parseInt(msgObj.color,16);
+	var msg_content = msgObj.msg_content;
+	var index = numOfMsgs;
+	var inner_depth = 0;
+	var chatMsg:MovieClip = _root.createEmptyMovieClip("chat"+index, depth++);
+	chatMsg._visible = false;
+	var user_Field:TextField = null;
+	var msg_Field:TextField = null;
+
+	if (msg_content.length>0) {
+		var speech_icon:MovieClip = chatMsg.attachMovie("Speech_icon", "speech_icon", inner_depth++);
+		speech_icon._x = 5;
+		speech_icon._y = 0;
+		speech_icon.onPress = function() {
+			getURL("javascript:speech('" + this._parent.msg_Field.htmlText + "');");
+		};
+
+		var user_field_width:Number = 120;
+		user_Field = chatMsg.createTextField("user_Field", inner_depth++, speech_icon._width+10, 0, user_field_width, 1);
+		user_Field.text = user_name+":";
+		setMsgFormat(user_Field,0xffff00,"Verdana",16);
+
+		var msg_field_width:Number = Stage.width-user_field_width-upButton._width-10;
+		var msg_field_x = user_field_width+5;
+
+		msg_Field = chatMsg.createTextField("msg_Field", inner_depth++, msg_field_x, 0, msg_field_width, 1);
+		var style:TextField.StyleSheet = new TextField.StyleSheet();
+		msg_Field.html = true;
+		msg_Field.htmlText = msg_content;
+		setMsgFormat(msg_Field,msg_color,"Arial",16);
+
+		
+	}
+
+	attachMsg(chatMsg);
+}
+
+function attachMsg(chatMsg:MovieClip) {
+	if (chatMsg.msg_Field != null && (chatMsg.user_Field._height == 0 || chatMsg.msg_Field._height == 0)) {
+		setTimeout(attachMsg,10,chatMsg);
+		return;
+	}
+	chatMsg._x = 0;
+	chatMsg._y = totalMsgHeight;
+	chatArray.push(chatMsg);
+	numOfMsgs++;
+	totalMsgHeight += chatMsg._height+10;
+	chatMsg._visible = true;
+	showLastMsg();
+	readyToAdd = true;
+}
+
+function showFirstMsg() {
+	scrolling = true;
+	msgScroll(-firstMsgPosition);
+	scrolling = false;
+}
+
+function showLastMsg() {
+	scrolling = true;
+	msgScroll(-totalMsgHeight);
+	scrolling = false;
+}
+
+function msgScroll(distance:Number) {
+	if (!scrolling || distance == 0) {
+		return;
+	}
+	if (distance>0 && _root.chatArray[0]._y+distance>=0) {
+		distance = -_root.chatArray[0]._y;
+	} else if (distance<0 && _root.totalMsgHeight<=Stage.height) {
+		return;
+	} else if (distance<0 && _root.totalMsgHeight+distance<Stage.height) {
+		distance = Stage.height-_root.totalMsgHeight;
+	}
+	for(i:Number = 0; i < _root.chatArray.length; i++ ) {;
+		_root.chatArray[i]._y += distance;
+	}
+	firstMsgPosition = _root.chatArray[0]._y;
+	totalMsgHeight += distance;
+	scroll_timer = setTimeout(msgScroll, 10, distance);
+}

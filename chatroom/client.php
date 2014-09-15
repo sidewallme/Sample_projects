@@ -80,7 +80,7 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
             console.log(document.getElementById("filename").value);
             return true;
         }
-        //]]>
+        //>
         </script>
     </head>
     <body style="text-align: left" onload="load()">
