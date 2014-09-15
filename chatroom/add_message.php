@@ -23,7 +23,8 @@ if (!$xmlh->fileExist()) {
     exit;
 }
 
-// <message name="...">...</message>
+// create the following DOM tree structure for a message and add it to the chatroom XML file
+
 
 $xmlh->openFile();
 

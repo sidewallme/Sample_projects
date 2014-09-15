@@ -1,43 +1,27 @@
 <?php
 
-/**
-*
-* XML file handler
-*
-* The class xmlHandler is written based on the DOM functions
-*
-*/
-
 class xmlHandler {
 
 	var $filename;		// the filename of the XML file
 	var $doc;			// the document of the XML file
 	var $root;			// the root element node of the document
 
-	/**
-	* constructor
-	*
-	* @param string $filename, filename of the XML file
-	*/
+	//constructor
+
 	function xmlHandler($filename) {
 		$this->filename = $filename;
 		$this->root = null;
 		$this->doc = null;
 	}
 
-	/**
-	* check if the XML file exist
-	*
-	* @return	boolean
-	*/
+	// check if the XML file exist
+
 	function fileExist() {
 		return file_exists($this->filename);
 	}
 
-	/**
-	* open the XML file
-	*
-	*/
+	// open the XML file
+	
 	function openFile() {
 		$rp = realpath($this->filename);
 
@@ -53,30 +37,21 @@ class xmlHandler {
 		}
 	}
 
-	/**
-	* save the XML file
-	*
-	*/
+	// save the XML file
+	
 	function saveFile() {
 		$rp = realpath($this->filename);
 		$this->doc->save($rp) ;
 	}
 
-	/**
-	* dump the XML tree into a string
-	*
-	* @return string
-	*/
+	//dump the XML tree into a string
+
 	function dumpToString() {
 		return $this->doc->saveXML();
 	}
 
-	/**
-	* add a root element node to the document
-	*
-	* @param string $element_name, element name
-	* @return DomNode $root
-	*/
+	// add a root element node to the document
+
 	function addRootElement($element_name) {
 
 		$this->root = $this->doc->createElement($element_name);
@@ -84,90 +59,55 @@ class xmlHandler {
 		return $this->root;
 	}
 
-	/**
-	* get the root element node from the document
-	*
-	* @return DomNode $root
-	*/
+	//get the root element node from the document
+
 	function getRootElement() {
 		return $this->root;
 	}
 
-	/**
-	* add an element node to an element node
-	*
-	* @param DomNode $element, the element node
-	* @param string $child_name, the name of the to be added
-	*/
+	// add an element node to an element node
+
 	function addElement($element, $child_name) {
 		$child = $this->doc->createElement($child_name);
 		$element->appendChild($child);
 		return $child;
 	}
 
-	/**
-	* add a text node to an element node
-	*
-	* @param DomNode $element, the element node
-	* @param string $child_text, the text of the element's text node
-	*/
+	// add a text node to an element node
+	
 	function addText($element, $child_text) {
 		$child_text_node = new DOMText($child_text);
 		$element->appendChild($child_text_node);
 	}
 
-	/**
-	* get an element node from the document
-	*
-	* @param string $element_name, the name of the element to be searched in the document
-	* @param integer $index, the index of the element (there may be lots of element with the same name)
-	* @return DomNode
-	*/
+	// get an element node from the document
+	
 	function getElement($element_name, $index=0) {
 		$node_array = $this->doc->documentElement->getElementsByTagName($element_name);
 		return $node_array->item($index);
 	}
 
-	/**
-	* get the chlid nodes of an element node from the document
-	*
-	* @param string $element_name, the name of the element to be searched in the document
-	* @param integer $index, the index of the element (there may be lots of element with the same name)
-	* @return array, all children of the node
-	*/
+	//get the chlid nodes of an element node from the document
+
 	function getChildNodes($element_name, $index=0) {
 		$node_array = $this->doc->documentElement->getElementsByTagName($element_name);
 		return $node_array;
 	}
 
-	/**
-	* set an attribute of an element node
-	*
-	* @param DomNode $element, the element node
-	* @param string $attribute_name, the name of the attribute
-	* @param string $value, the value of the attribute
-	*/
+	// set an attribute of an element node
+	
 	function setAttribute($element, $attribute_name, $value) {
 		$element->setAttribute($attribute_name, $value);
 	}
 
-	/**
-	* get an attribute of an element node
-	*
-	* @param DomNode $element, the element node
-	* @param string $attribute_name, the name of the attribute
-	* @return string, the value of the attribute
-	*/
+	// get an attribute of an element node
+	
 	function getAttribute($element, $attribute_name) {
 		return $element->getAttribute($attribute_name);
 	}
 	
-	/**
-	* remove an element node
-	*
-	* @param DomNode $element, the element node
-	* @param DomNode $child, the child node to be removed
-	*/
+	// remove an element node
+	
 	function removeElement($element, $child) {
 		$element->removeChild($child);
 	}

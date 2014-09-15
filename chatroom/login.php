@@ -35,16 +35,15 @@ $file=$_FILES['pic'];
 		   $rand=date("YmdHis") . rand(100,999);
 		   $picName=$upfile."/".$rand.$fname;
 		   
-		   if(file_exists($picName)){
+		  if(file_exists($picName)){
 		    echo "<font color='#FF0000'>please change to another filename</font>";
 		    exit;
-		     }
-		   if(!move_uploaded_file($file['tmp_name'],$picName)){  
+		  }
+		  if(!move_uploaded_file($file['tmp_name'],$picName)){  
 		    echo "<font color='#FF0000'>error</font>";
 		    exit;
-		    }else{
-		   
-		    }
+		  }else{
+		  }
      }
 }
 if(empty($picName)){

@@ -4,7 +4,7 @@ require_once('xmlHandler.php');
 
 $datasize = $_POST["datasize"];
 
-// set the execution time limit for this php session to 60 seconds (default is in php.ini)
+// set the execution time limit for this php session to 60 seconds
 set_time_limit(60);
         
 // create the chatroom xml file handler
